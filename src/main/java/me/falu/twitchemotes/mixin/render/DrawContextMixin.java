@@ -16,9 +16,7 @@ public class DrawContextMixin {
                     "drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;IIIZ)I"
             },
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;tryDraw()V",
-                    shift = At.Shift.AFTER
+                    value = "RETURN"
             )
     )
     private void drawScheduledEmotes(CallbackInfoReturnable<Integer> cir) {
