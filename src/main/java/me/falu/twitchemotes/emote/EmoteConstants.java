@@ -13,12 +13,6 @@ public class EmoteConstants {
             "https://cdn.7tv.app/emote/60ef410f48cde2fcc3eb5caa/4x.webp",
             Emote.ImageType.WEBP
     );
-    public static final Emote PP_BOUNCE = new Emote(
-            "ppBounce",
-            "6379879d541f8c821fb1fe17",
-            "https://cdn.7tv.app/emote/6379879d541f8c821fb1fe17/4x.webp",
-            Emote.ImageType.WEBP
-    );
     public static final Emote HMM = new Emote(
             "Hmm",
             "60ae3e54259ac5a73e56a426",
@@ -43,11 +37,11 @@ public class EmoteConstants {
             "https://cdn.7tv.app/emote/6102a37ba57eeb23c0e3e5cb/4x.webp",
             Emote.ImageType.WEBP
     );
-    public static final Emote PP_HOP = new Emote(
-            "ppHop",
-            "637995e7d6c9ec937a9c140e",
-            "https://cdn.7tv.app/emote/637995e7d6c9ec937a9c140e/4x.webp",
-            Emote.ImageType.WEBP
+    public static final Emote HTY_LASER = new Emote(
+            "htyLaser",
+            "2ec0d7ee24de46a7befd8fdb8d447e52",
+            "https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_2ec0d7ee24de46a7befd8fdb8d447e52/animated/dark/3.0",
+            Emote.ImageType.GIF
     );
     public static final Emote SNIFFA = new Emote(
             "SNIFFA",

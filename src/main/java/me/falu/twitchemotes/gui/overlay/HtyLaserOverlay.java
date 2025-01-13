@@ -9,13 +9,13 @@ import net.minecraft.util.Util;
 
 import java.util.Random;
 
-public class PpHopOverlay {
+public class HtyLaserOverlay {
     private long sequenceStart;
     private float scale;
     private int lastHeight = -1;
     private int y;
 
-    public PpHopOverlay() {
+    public HtyLaserOverlay() {
         this.sequenceStart = Util.getMeasuringTimeMs();
         this.scale = this.randomScale();
         this.y = -1;
@@ -26,7 +26,7 @@ public class PpHopOverlay {
     }
 
     public void render(MatrixStack matrices, int width, int height) {
-        EmoteTextureHandler textureHandler = EmoteConstants.PP_BOUNCE.textureHandler;
+        EmoteTextureHandler textureHandler = EmoteConstants.HTY_LASER.textureHandler;
         long diff = Util.getMeasuringTimeMs() - this.sequenceStart;
         float progress = (float) diff / 6000;
 
@@ -38,10 +38,10 @@ public class PpHopOverlay {
                 this.lastHeight = height;
             }
             matrices.scale(this.scale, this.scale, 0.0F);
-            EmoteConstants.PP_BOUNCE.createTextureBuffer(
+            EmoteConstants.HTY_LASER.createTextureBuffer(
                     matrices.peek().getPositionMatrix(),
                     (textureHandler.getWidth() * -2 + (width + textureHandler.getWidth()) * progress) / this.scale,
-                    this.y / this.scale,
+                    this.y / this.scale + (float) Math.sin(progress * 10.0f) * 3.0f,
                     0.5F
             );
             textureHandler.postRender();

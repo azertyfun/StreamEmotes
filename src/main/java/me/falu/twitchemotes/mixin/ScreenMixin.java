@@ -1,7 +1,6 @@
 package me.falu.twitchemotes.mixin;
 
-import me.falu.twitchemotes.TwitchEmotesOptions;
-import me.falu.twitchemotes.gui.overlay.PpHopOverlay;
+import me.falu.twitchemotes.gui.overlay.HtyLaserOverlay;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,14 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
-    @Unique private static final PpHopOverlay PP_HOP_OVERLAY = new PpHopOverlay();
+    @Unique private static final HtyLaserOverlay HTYLASER_OVERLAY = new HtyLaserOverlay();
     @Shadow public int width;
     @Shadow public int height;
 
     @Inject(method = "renderBackground", at = @At("TAIL"))
     private void renderPpOverlay(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY.getValue()) {
-            PP_HOP_OVERLAY.render(context.getMatrices(), this.width, this.height);
-        }
+        HTYLASER_OVERLAY.render(context.getMatrices(), this.width, this.height);
     }
 }

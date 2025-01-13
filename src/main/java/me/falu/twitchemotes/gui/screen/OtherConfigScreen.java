@@ -57,15 +57,6 @@ public class OtherConfigScreen extends Screen {
                 TwitchEmotesOptions.SHOW_USER_COLORS
         ));
         this.addDrawableChild(new LimitlessBooleanButtonWidget(
-                this.width / 2 - smallButtonWidth - gap / 2,
-                this.height / 2 + gap / 2,
-                smallButtonWidth,
-                buttonHeight,
-                Text.literal("ppHop Overlay"),
-                EmoteConstants.PP_HOP,
-                TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY
-        ));
-        this.addDrawableChild(new LimitlessBooleanButtonWidget(
                 this.width / 2 + gap / 2,
                 this.height / 2 + gap / 2,
                 smallButtonWidth,
