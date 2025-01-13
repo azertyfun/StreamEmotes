@@ -6,16 +6,13 @@
   "client": [
     "chat.ChatHudMixin",
     "chat.ChatInputSuggestorMixin",
-    "chat.ChatScreenMixin",
-    "chat.ClientPlayNetworkHandlerMixin",
 
     "render.DrawContextMixin",
     "render.DrawerMixin",
     "render.StyleMixin",
 
     "MinecraftClientMixin",
-    "ScreenMixin",
-    "TitleScreenMixin"
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

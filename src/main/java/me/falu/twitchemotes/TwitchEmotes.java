@@ -1,13 +1,9 @@
 package me.falu.twitchemotes;
 
-import com.gikk.twirk.Twirk;
-import com.gikk.twirk.TwirkBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.falu.twitchemotes.chat.TwitchListener;
-import me.falu.twitchemotes.emote.Badge;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.provider.*;
 import net.fabricmc.api.ClientModInitializer;
@@ -37,19 +33,12 @@ public class TwitchEmotes implements ClientModInitializer {
             new BTTVEmoteProvider(),
             new FFZEmoteProvider(),
             new STVEmoteProvider(),
-            new TwitchEmoteProvider()
+            new TwitchProxyEmoteProvider()
     };
     private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
-    private static final Map<String, Badge> BADGE_MAP = new HashMap<>();
-    public static boolean CHAT_CONNECTED = false;
-    private static Twirk TWIRK;
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
-    }
-
-    public static void sendChatMessage(String message) {
-        TWIRK.channelMessage(message);
     }
 
     private static boolean validStrings(String... strings) {
@@ -68,119 +57,29 @@ public class TwitchEmotes implements ClientModInitializer {
         return specific.get(name);
     }
 
-    public static Badge getBadge(String name) {
-        return BADGE_MAP.get(name);
-    }
-
     public static Set<String> getEmoteKeys() {
         return EMOTE_MAP.keySet();
     }
 
     public static void invalidateEmote(Emote emote) {
-        if (emote instanceof Badge) {
-            BADGE_MAP.remove(emote.name);
-        } else {
+        if (emote instanceof Emote) {
             EMOTE_MAP.remove(emote.name);
         }
     }
 
-    public static JsonElement getJsonAuthResponse(String endpoint) {
-        String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
-        String clientId = TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue();
-        if (validStrings(auth, clientId)) {
-            try {
-                URL url = new URL(endpoint);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.addRequestProperty("Authorization", "Bearer " + TwitchEmotesOptions.TWITCH_AUTH.getValue());
-                connection.addRequestProperty("Client-Id", TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue());
-                connection.setUseCaches(false);
-                InputStream inputStream = connection.getInputStream();
-                String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-                return JsonParser.parseString(result);
-            } catch (IOException e) {
-                TwitchEmotes.LOGGER.error("Error while making HTTP request", e);
-            }
-        }
-        return null;
-    }
-
-    private static String getTwitchId() {
-        String user = TwitchEmotesOptions.TWITCH_NAME.getValue();
-        String channel = TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue();
-        if (!channel.isEmpty() && !user.equals(channel)) {
-            JsonElement response = getJsonAuthResponse("https://api.twitch.tv/helix/users?login=" + channel);
-            if (response != null && !response.isJsonNull() && response.isJsonObject()) {
-                JsonObject object = response.getAsJsonObject();
-                if (object.has("data")) {
-                    JsonArray results = object.get("data").getAsJsonArray();
-                    if (!results.isEmpty()) {
-                        JsonObject data = results.get(0).getAsJsonObject();
-                        if (data.get("login").getAsString().equalsIgnoreCase(channel)) {
-                            return data.get("id").getAsString();
-                        }
-                    }
-                }
-            }
-        }
-        return TwitchEmotesOptions.TWITCH_ID.getValue();
-    }
-
     public static void reloadEmotes() {
-        String id = getTwitchId();
-        String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
-        String clientId = TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue();
-
         EMOTE_MAP.clear();
-        BADGE_MAP.clear();
-        if (validStrings(id, auth, clientId)) {
-            for (EmoteProvider provider : EMOTE_PROVIDERS) {
-                List<Emote> emotes = provider.collectEmotes(id);
-                for (Emote emote : emotes) {
-                    EMOTE_MAP.put(emote.name, emote);
-                }
-                log("Finished loading " + emotes.size() + " emotes from " + provider.getProviderName() + ".");
+        for (EmoteProvider provider : EMOTE_PROVIDERS) {
+            List<Emote> emotes = provider.collectEmotes();
+            for (Emote emote : emotes) {
+                EMOTE_MAP.put(emote.name, emote);
             }
-            BADGE_MAP.putAll(Badge.getBadges());
-        } else {
-            LOGGER.warn("No Twitch user ID provided. Skipping loading emotes.");
-        }
-    }
-
-    public static void reloadChat() {
-        String name = TwitchEmotesOptions.TWITCH_NAME.getValue();
-        String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
-        String channel = TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue().isEmpty() ? name : TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue();
-
-        CHAT_CONNECTED = false;
-        if (TWIRK != null) {
-            TWIRK.close();
-            TWIRK = null;
-        }
-        if (validStrings(channel, name, auth)) {
-            TWIRK = new TwirkBuilder(channel, name, "oauth:" + auth)
-                    .setDebugLogMethod(s -> {
-                        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-                            log(s);
-                        }
-                    })
-                    .build();
-            TWIRK.addIrcListener(new TwitchListener());
-            try {
-                if (!TWIRK.connect()) {
-                    LOGGER.error("Couldn't successfully connect to Twitch chat.");
-                }
-            } catch (IOException | InterruptedException e) {
-                LOGGER.error("Error while connecting to Twitch chat", e);
-            }
-        } else {
-            LOGGER.warn("Invalid Twitch credentials provided. Skipping connecting to chat.");
+            log("Finished loading " + emotes.size() + " emotes from " + provider.getProviderName() + ".");
         }
     }
 
     public static void reload() {
         reloadEmotes();
-        reloadChat();
     }
 
     @Override

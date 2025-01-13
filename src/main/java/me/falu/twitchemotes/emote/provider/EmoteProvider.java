@@ -54,10 +54,10 @@ public abstract class EmoteProvider {
     public abstract JsonArray getUserEmotes(String userId);
     public abstract Emote createEmote(JsonObject data);
 
-    public final List<Emote> collectEmotes(String userId) {
+    public final List<Emote> collectEmotes() {
         List<Emote> result = new ArrayList<>();
         JsonArray emotes = this.getGlobalEmotes();
-        emotes.addAll(this.getUserEmotes(userId));
+        emotes.addAll(this.getUserEmotes("hortyunderscore"));
         for (JsonElement element : emotes) {
             result.add(this.createEmote(element.getAsJsonObject()));
         }
