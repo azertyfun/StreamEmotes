@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.falu.twitchemotes.emote.Emote;
-import me.falu.twitchemotes.emote.provider.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -13,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import webpdecoderjn.WebPDecoder;
 
 import java.io.IOException;
@@ -29,32 +29,55 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final float EMOTE_SIZE = 9.0F;
     public static final Queue<Emote.DrawData> SCHEDULED_DRAW = new ArrayDeque<>();
-    private static final EmoteProvider[] EMOTE_PROVIDERS = new EmoteProvider[] {
-            new BTTVEmoteProvider(),
-            new FFZEmoteProvider(),
-            new STVEmoteProvider(),
-            new TwitchProxyEmoteProvider()
-    };
-    private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
+
+    public static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
+    public static final Map<UUID, Map<String, Boolean>> USER_EMOTE_MAP = new HashMap<>();
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
     }
 
-    private static boolean validStrings(String... strings) {
-        for (String string : strings) {
-            if (string == null || string.trim().isEmpty()) {
-                return false;
-            }
-        }
-        return true;
+    private static JsonElement getJsonResponse(String endpoint) throws IOException {
+        URL url = new URL(endpoint);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        InputStream inputStream = connection.getInputStream();
+        String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        return JsonParser.parseString(result);
     }
 
-    public static Emote getEmote(String name, Map<String, Emote> specific) {
-        if (EMOTE_MAP.containsKey(name)) {
+    private static Map<String, Boolean> fetchPlayerEmotes(UUID playerUUID) {
+        try {
+            HashMap<String, Boolean> response = new HashMap<>();
+            getJsonResponse("http://localhost:8080/v1/emotes/" + playerUUID.toString()).getAsJsonArray().forEach(e -> {
+                JsonObject el = e.getAsJsonObject();
+                String emoteName = el.get("name").getAsString();
+
+                // If no-one else has this emote, create it
+                if (!EMOTE_MAP.containsKey(emoteName)) {
+                    Emote emote = new Emote(emoteName, el.get("id").getAsString(), el.get("url").getAsString(), el.get("animated").getAsBoolean() ? Emote.ImageType.GIF : Emote.ImageType.STATIC);
+                    EMOTE_MAP.put(emoteName, emote);
+                }
+
+                response.put(emoteName, true);
+            });
+            return response;
+        } catch (IOException e) {
+            TwitchEmotes.LOGGER.error("Failed getting emotes for " + playerUUID + ": " + e.toString());
+            return new HashMap<>();
+        }
+    }
+
+    public static Emote getEmote(String name, UUID playerUUID) {
+        if (!USER_EMOTE_MAP.containsKey(playerUUID)) {
+            USER_EMOTE_MAP.put(playerUUID, fetchPlayerEmotes(playerUUID));
+        }
+
+        if (USER_EMOTE_MAP.get(playerUUID).containsKey(name)) {
             return EMOTE_MAP.get(name);
         }
-        return specific.get(name);
+
+        return null;
     }
 
     public static Set<String> getEmoteKeys() {
@@ -67,21 +90,6 @@ public class TwitchEmotes implements ClientModInitializer {
         }
     }
 
-    public static void reloadEmotes() {
-        EMOTE_MAP.clear();
-        for (EmoteProvider provider : EMOTE_PROVIDERS) {
-            List<Emote> emotes = provider.collectEmotes();
-            for (Emote emote : emotes) {
-                EMOTE_MAP.put(emote.name, emote);
-            }
-            log("Finished loading " + emotes.size() + " emotes from " + provider.getProviderName() + ".");
-        }
-    }
-
-    public static void reload() {
-        reloadEmotes();
-    }
-
     @Override
     public void onInitializeClient() {
         log("Using " + MOD_NAME + " v" + MOD_VERSION);
@@ -91,6 +99,5 @@ public class TwitchEmotes implements ClientModInitializer {
         } catch (IOException e) {
             LOGGER.error("Couldn't initialize WebP decoder", e);
         }
-        reload();
     }
 }
