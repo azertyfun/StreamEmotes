@@ -1,8 +1,8 @@
-package me.falu.twitchemotes.gui.overlay;
+package eu.e4b4.streamemotes.gui.overlay;
 
-import me.falu.twitchemotes.TwitchEmotes;
-import me.falu.twitchemotes.emote.EmoteConstants;
-import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
+import eu.e4b4.streamemotes.StreamEmotes;
+import eu.e4b4.streamemotes.emote.EmoteConstants;
+import eu.e4b4.streamemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
@@ -34,7 +34,7 @@ public class HtyLaserOverlay {
         NativeImage image = textureHandler.getImage();
         if (image != null) {
             if (this.y == -1 || this.lastHeight != height) {
-                this.y = new Random().nextInt(height - (int) TwitchEmotes.EMOTE_SIZE);
+                this.y = new Random().nextInt(height - (int) StreamEmotes.EMOTE_SIZE);
                 this.lastHeight = height;
             }
             matrices.scale(this.scale, this.scale, 0.0F);

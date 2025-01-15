@@ -1,6 +1,6 @@
-package me.falu.twitchemotes.emote.texture;
+package eu.e4b4.streamemotes.emote.texture;
 
-import me.falu.twitchemotes.emote.Emote;
+import eu.e4b4.streamemotes.emote.Emote;
 import net.minecraft.client.texture.NativeImage;
 import org.w3c.dom.Node;
 import webpdecoderjn.WebPDecoder;

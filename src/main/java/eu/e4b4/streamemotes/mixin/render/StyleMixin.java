@@ -1,7 +1,7 @@
-package me.falu.twitchemotes.mixin.render;
+package eu.e4b4.streamemotes.mixin.render;
 
-import me.falu.twitchemotes.emote.Emote;
-import me.falu.twitchemotes.emote.EmoteStyleOwner;
+import eu.e4b4.streamemotes.emote.Emote;
+import eu.e4b4.streamemotes.emote.EmoteStyleOwner;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;

@@ -1,6 +1,6 @@
-package me.falu.twitchemotes.mixin;
+package eu.e4b4.streamemotes.mixin;
 
-import me.falu.twitchemotes.gui.overlay.HtyLaserOverlay;
+import eu.e4b4.streamemotes.gui.overlay.HtyLaserOverlay;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;

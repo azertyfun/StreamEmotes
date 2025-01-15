@@ -1,17 +1,14 @@
-package me.falu.twitchemotes;
+package eu.e4b4.streamemotes;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.falu.twitchemotes.emote.Emote;
+import eu.e4b4.streamemotes.emote.Emote;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +23,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class TwitchEmotes implements ClientModInitializer {
-    public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer("stream-emotes").orElseThrow(RuntimeException::new);
+public class StreamEmotes implements ClientModInitializer {
+    public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer("streamemotes").orElseThrow(RuntimeException::new);
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
@@ -68,7 +65,7 @@ public class TwitchEmotes implements ClientModInitializer {
             });
             return response;
         } catch (IOException e) {
-            TwitchEmotes.LOGGER.error("Failed getting emotes for {}: {}", playerUUID, e);
+            LOGGER.error("Failed getting emotes for {}: {}", playerUUID, e);
             return new HashMap<>();
         }
     }

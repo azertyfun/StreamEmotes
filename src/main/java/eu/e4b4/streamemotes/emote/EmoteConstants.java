@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.emote;
+package eu.e4b4.streamemotes.emote;
 
 public class EmoteConstants {
     public static final Emote HTY_LASER = new Emote(

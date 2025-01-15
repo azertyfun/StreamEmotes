@@ -1,17 +1,15 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.falu.twitchemotes.mixin",
+  "package": "eu.e4b4.streamemotes.mixin",
   "compatibilityLevel": "JAVA_9",
   "client": [
     "chat.MessageHandlerMixin",
     "chat.MessageHandlerInvoker",
     "chat.ChatInputSuggestorMixin",
-
     "render.DrawContextMixin",
     "render.DrawerMixin",
     "render.StyleMixin",
-
     "ScreenMixin"
   ],
   "injectors": {

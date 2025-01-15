@@ -1,7 +1,7 @@
-package me.falu.twitchemotes.mixin.render;
+package eu.e4b4.streamemotes.mixin.render;
 
-import me.falu.twitchemotes.TwitchEmotes;
-import me.falu.twitchemotes.emote.Emote;
+import eu.e4b4.streamemotes.StreamEmotes;
+import eu.e4b4.streamemotes.emote.Emote;
 import net.minecraft.client.gui.DrawContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ public class DrawContextMixin {
     )
     private void drawScheduledEmotes(CallbackInfoReturnable<Integer> cir) {
         Emote.DrawData data;
-        while ((data = TwitchEmotes.SCHEDULED_DRAW.poll()) != null) {
+        while ((data = StreamEmotes.SCHEDULED_DRAW.poll()) != null) {
             data.draw();
         }
     }

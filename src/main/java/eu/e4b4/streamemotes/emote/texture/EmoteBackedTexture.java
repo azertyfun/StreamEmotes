@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.emote.texture;
+package eu.e4b4.streamemotes.emote.texture;
 
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;

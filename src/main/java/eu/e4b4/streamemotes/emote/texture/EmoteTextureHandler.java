@@ -1,9 +1,9 @@
-package me.falu.twitchemotes.emote.texture;
+package eu.e4b4.streamemotes.emote.texture;
 
+import eu.e4b4.streamemotes.StreamEmotes;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import me.falu.twitchemotes.TwitchEmotes;
-import me.falu.twitchemotes.emote.Emote;
+import eu.e4b4.streamemotes.emote.Emote;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Util;
@@ -27,14 +27,14 @@ public class EmoteTextureHandler {
 
     public float getWidth() {
         if (this.textures.isEmpty()) {
-            return TwitchEmotes.EMOTE_SIZE;
+            return StreamEmotes.EMOTE_SIZE;
         }
         NativeImageBackedTexture texture = this.textures.get(this.currentFrame);
         if (texture.getImage() == null) {
-            return TwitchEmotes.EMOTE_SIZE;
+            return StreamEmotes.EMOTE_SIZE;
         }
         NativeImage img = texture.getImage();
-        return (TwitchEmotes.EMOTE_SIZE * img.getWidth()) / img.getHeight();
+        return (StreamEmotes.EMOTE_SIZE * img.getWidth()) / img.getHeight();
     }
 
     public NativeImage getImage() {
@@ -45,16 +45,16 @@ public class EmoteTextureHandler {
                 try {
                     url = URI.create(this.emote.url.replace("http:", "https:")).toURL();
                 } catch (MalformedURLException ignored) {
-                    TwitchEmotes.LOGGER.error("Invalid URL for emote '{}'.", this.emote.name);
-                    TwitchEmotes.invalidateEmote(this.emote);
+                    StreamEmotes.LOGGER.error("Invalid URL for emote '{}'.", this.emote.name);
+                    StreamEmotes.invalidateEmote(this.emote);
                     return;
                 }
                 try {
                     TextureReader textureReader = new TextureReader(url, this.emote.imageType);
                     textures = new ArrayList<>(textureReader.read());
                 } catch (IOException e) {
-                    TwitchEmotes.LOGGER.error("Error while reading image for '{}'", this.emote.name, e);
-                    TwitchEmotes.invalidateEmote(this.emote);
+                    StreamEmotes.LOGGER.error("Error while reading image for '{}'", this.emote.name, e);
+                    StreamEmotes.invalidateEmote(this.emote);
                     this.failed = true;
                     this.loading = false;
                     return;
@@ -95,8 +95,8 @@ public class EmoteTextureHandler {
             return this.textures.get(this.currentFrame).getGlId();
         } catch (IndexOutOfBoundsException ignored) {
             if (!this.loading) {
-                TwitchEmotes.LOGGER.error("Requested frame doesn't exist for emote '{}'.", this.emote.name);
-                TwitchEmotes.invalidateEmote(this.emote);
+                StreamEmotes.LOGGER.error("Requested frame doesn't exist for emote '{}'.", this.emote.name);
+                StreamEmotes.invalidateEmote(this.emote);
             }
         }
         return -1;

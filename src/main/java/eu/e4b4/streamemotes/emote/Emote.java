@@ -1,11 +1,11 @@
-package me.falu.twitchemotes.emote;
+package eu.e4b4.streamemotes.emote;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import eu.e4b4.streamemotes.StreamEmotes;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import me.falu.twitchemotes.TwitchEmotes;
-import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
+import eu.e4b4.streamemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.render.*;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import org.joml.Matrix4f;
@@ -22,7 +22,7 @@ public class Emote {
 
     public boolean scheduleDraw(float x, float y, Matrix4f matrix, float alpha) {
         if (this.textureHandler.getImage() != null || this.textureHandler.loading) {
-            return TwitchEmotes.SCHEDULED_DRAW.add(new DrawData(this, x, y, matrix, alpha));
+            return StreamEmotes.SCHEDULED_DRAW.add(new DrawData(this, x, y, matrix, alpha));
         }
         return false;
     }
@@ -40,7 +40,7 @@ public class Emote {
         RenderSystem.setShaderTexture(0, glId);
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         RenderSystem.enableBlend();
-        float size = TwitchEmotes.EMOTE_SIZE;
+        float size = StreamEmotes.EMOTE_SIZE;
         float width = this.textureHandler.getWidth();
         BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder

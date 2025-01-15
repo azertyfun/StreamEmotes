@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.mixin.chat;
+package eu.e4b4.streamemotes.mixin.chat;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.MinecraftClient;

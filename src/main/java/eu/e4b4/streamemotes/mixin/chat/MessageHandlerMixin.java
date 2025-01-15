@@ -1,9 +1,9 @@
-package me.falu.twitchemotes.mixin.chat;
+package eu.e4b4.streamemotes.mixin.chat;
 
 import com.mojang.authlib.GameProfile;
-import me.falu.twitchemotes.TwitchEmotes;
-import me.falu.twitchemotes.emote.Emote;
-import me.falu.twitchemotes.emote.EmoteStyleOwner;
+import eu.e4b4.streamemotes.StreamEmotes;
+import eu.e4b4.streamemotes.emote.Emote;
+import eu.e4b4.streamemotes.emote.EmoteStyleOwner;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.network.message.MessageTrustStatus;
@@ -42,9 +42,9 @@ public class MessageHandlerMixin {
                         split = new StringBuilder();
                     }
                 }
-                synchronized(TwitchEmotes.USER_EMOTE_MAP) {
+                synchronized(StreamEmotes.USER_EMOTE_MAP) {
                     for (String word : words) {
-                        Emote emote = TwitchEmotes.getEmote(word.trim(), sender.getId());
+                        Emote emote = StreamEmotes.getEmote(word.trim(), sender.getId());
                         // Emote emote = TwitchEmotes.getEmote(word.trim(), UUID.fromString("dba5d39b-d48b-4b1f-8f99-7e0f4950c684"));
                         if (emote != null) {
                             textUpdated.append(Text.literal("_").styled(s -> ((EmoteStyleOwner) style).twitchemotes$withEmoteStyle(emote)));

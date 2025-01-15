@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.emote;
+package eu.e4b4.streamemotes.emote;
 
 import net.minecraft.text.Style;
 

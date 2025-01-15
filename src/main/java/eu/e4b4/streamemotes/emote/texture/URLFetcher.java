@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.emote.texture;
+package eu.e4b4.streamemotes.emote.texture;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
