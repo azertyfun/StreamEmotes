@@ -10,7 +10,8 @@
     "render.DrawContextMixin",
     "render.DrawerMixin",
     "render.StyleMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

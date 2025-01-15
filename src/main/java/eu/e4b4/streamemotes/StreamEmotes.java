@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import eu.e4b4.streamemotes.emote.Emote;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -47,7 +48,7 @@ public class StreamEmotes implements ClientModInitializer {
         return JsonParser.parseString(result);
     }
 
-    private static Map<String, Boolean> fetchPlayerEmotes(UUID playerUUID) {
+    public static Map<String, Boolean> fetchPlayerEmotes(UUID playerUUID) {
         try {
             HashMap<String, Boolean> response = new HashMap<>();
             LOGGER.info("Fetching player emotes for {}", playerUUID);
@@ -111,6 +112,12 @@ public class StreamEmotes implements ClientModInitializer {
          * We also lazy-load them when we receive the first chat message from a user; that way already connected players
          * also get emotes. For those we could listen on "server join" event and list all players, but on large servers
          * this may be an issue (not my use-case though).
+         *
+         * HOWEVER
+         * This can't be done using the fabric API. Apparently the server I'm joining does not log join messages using
+         * the standard facilities, which means that the fabric API doesn't have a way to expose them that I can see.
+         * (ServerPlayConnectionEvents doesn't work)
+         * See ClientPlayNetworkHandlerMixin
          */
 
         // We joined the game
@@ -122,16 +129,6 @@ public class StreamEmotes implements ClientModInitializer {
                 USER_EMOTE_MAP.put(ownUUID, fetchPlayerEmotes(ownUUID));
             }
 
-        });
-
-        // Someone joined the game
-        // In single-player this also triggers when we join the game. But on the server I play on it doesn't because its
-        // plugins hides the join message for oneself.
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            LOGGER.info("User {} ({}) joined the game; loading all emotes.", handler.player.getName().getLiteralString(), handler.player.getUuid());
-            synchronized (USER_EMOTE_MAP) {
-                USER_EMOTE_MAP.put(handler.player.getUuid(), fetchPlayerEmotes(handler.player.getUuid()));
-            }
         });
     }
 }
