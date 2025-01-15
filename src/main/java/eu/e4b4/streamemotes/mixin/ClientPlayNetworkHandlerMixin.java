@@ -22,10 +22,12 @@ public class ClientPlayNetworkHandlerMixin {
                 return;
             }
 
-            StreamEmotes.LOGGER.info("User {} ({}) joined the game; loading all emotes.", receivedEntry.profile().getName(), receivedEntry.profile().getId());
-            synchronized (StreamEmotes.USER_EMOTE_MAP) {
-                StreamEmotes.USER_EMOTE_MAP.put(receivedEntry.profile().getId(), StreamEmotes.fetchPlayerEmotes(receivedEntry.profile().getId()));
-            }
+            new Thread(() -> {
+                StreamEmotes.LOGGER.info("User {} ({}) joined the game; loading all emotes.", receivedEntry.profile().getName(), receivedEntry.profile().getId());
+                synchronized (StreamEmotes.USER_EMOTE_MAP) {
+                    StreamEmotes.USER_EMOTE_MAP.put(receivedEntry.profile().getId(), StreamEmotes.fetchPlayerEmotes(receivedEntry.profile().getId()));
+                }
+            }).start();
         }
     }
 }
