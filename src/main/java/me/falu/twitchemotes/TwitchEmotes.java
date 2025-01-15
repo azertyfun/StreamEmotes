@@ -5,8 +5,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.falu.twitchemotes.emote.Emote;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class TwitchEmotes implements ClientModInitializer {
-    public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer("twitchemotes").orElseThrow(RuntimeException::new);
+    public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer("stream-emotes").orElseThrow(RuntimeException::new);
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
@@ -70,6 +75,8 @@ public class TwitchEmotes implements ClientModInitializer {
 
     public static Emote getEmote(String name, UUID playerUUID) {
         if (!USER_EMOTE_MAP.containsKey(playerUUID)) {
+            // This is an unknown player -> get all emotes.
+            // See rationale in onInitializeClient() below.
             USER_EMOTE_MAP.put(playerUUID, fetchPlayerEmotes(playerUUID));
         }
 
@@ -99,5 +106,35 @@ public class TwitchEmotes implements ClientModInitializer {
         } catch (IOException e) {
             LOGGER.error("Couldn't initialize WebP decoder", e);
         }
+
+        /*
+         * On player join, we need to start fetching that player's emotes. That way when they start talking in chat
+         * they'll hopefully be ready
+         *
+         * We also lazy-load them when we receive the first chat message from a user; that way already connected players
+         * also get emotes. For those we could listen on "server join" event and list all players, but on large servers
+         * this may be an issue (not my use-case though).
+         */
+
+        // We joined the game
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            assert client.player != null;
+            UUID ownUUID = client.player.getUuid();
+            LOGGER.info("Fetching emotes for self ({})", ownUUID);
+            synchronized (USER_EMOTE_MAP) {
+                USER_EMOTE_MAP.put(ownUUID, fetchPlayerEmotes(ownUUID));
+            }
+
+        });
+
+        // Someone joined the game
+        // In single-player this also triggers when we join the game. But on the server I play on it doesn't because its
+        // plugins hides the join message for oneself.
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            LOGGER.info("User {} ({}) joined the game; loading all emotes.", handler.player.getName().getLiteralString(), handler.player.getUuid());
+            synchronized (USER_EMOTE_MAP) {
+                USER_EMOTE_MAP.put(handler.player.getUuid(), fetchPlayerEmotes(handler.player.getUuid()));
+            }
+        });
     }
 }
