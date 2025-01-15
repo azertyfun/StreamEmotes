@@ -10,6 +10,7 @@ import net.minecraft.util.Util;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,9 @@ public class EmoteTextureHandler {
                 List<EmoteBackedTexture> textures;
                 URL url;
                 try {
-                    url = new URL(this.emote.url.replace("http:", "https:"));
+                    url = URI.create(this.emote.url.replace("http:", "https:")).toURL();
                 } catch (MalformedURLException ignored) {
-                    TwitchEmotes.LOGGER.error("Invalid URL for emote '" + this.emote.name + "'.");
+                    TwitchEmotes.LOGGER.error("Invalid URL for emote '{}'.", this.emote.name);
                     TwitchEmotes.invalidateEmote(this.emote);
                     return;
                 }
@@ -52,7 +53,7 @@ public class EmoteTextureHandler {
                     TextureReader textureReader = new TextureReader(url, this.emote.imageType);
                     textures = new ArrayList<>(textureReader.read());
                 } catch (IOException e) {
-                    TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
+                    TwitchEmotes.LOGGER.error("Error while reading image for '{}'", this.emote.name, e);
                     TwitchEmotes.invalidateEmote(this.emote);
                     this.failed = true;
                     this.loading = false;
@@ -94,7 +95,7 @@ public class EmoteTextureHandler {
             return this.textures.get(this.currentFrame).getGlId();
         } catch (IndexOutOfBoundsException ignored) {
             if (!this.loading) {
-                TwitchEmotes.LOGGER.error("Requested frame doesn't exist for emote '" + this.emote.name + "'.");
+                TwitchEmotes.LOGGER.error("Requested frame doesn't exist for emote '{}'.", this.emote.name);
                 TwitchEmotes.invalidateEmote(this.emote);
             }
         }

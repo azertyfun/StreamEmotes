@@ -4,12 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public class URLFetcher {
 
     public static byte[] getBytesFromURL(String urlString) throws IOException {
-        URL url = new URL(urlString);
+        URL url = URI.create(urlString).toURL();
         int redirectCount = 0;
         int maxRedirects = 5;
 
@@ -42,7 +44,11 @@ public class URLFetcher {
                 }
 
                 // Resolve relative redirects
-                url = new URL(url, location); // Resolve against the current URL
+                try {
+                    url = url.toURI().resolve(location).toURL();
+                } catch (URISyntaxException e) {
+                    throw new IOException(e);
+                }
                 redirectCount++;
             } else {
                 throw new IOException("Failed to download: HTTP response code " + responseCode);

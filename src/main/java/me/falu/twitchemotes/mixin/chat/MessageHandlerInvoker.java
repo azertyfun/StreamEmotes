@@ -17,11 +17,11 @@ import java.util.function.BooleanSupplier;
 
 @Mixin(MessageHandler.class)
 public interface MessageHandlerInvoker {
-    @Invoker public void callProcess(@Nullable MessageSignatureData signature, BooleanSupplier processor);
+    @Invoker void callProcess(@Nullable MessageSignatureData signature, BooleanSupplier processor);
 
-    @Invoker public boolean callProcessChatMessageInternal(
+    @Invoker boolean callProcessChatMessageInternal(
             MessageType.Parameters params, SignedMessage message, Text decorated, GameProfile sender, boolean onlyShowSecureChat, Instant receptionTimestamp
     );
 
-    @Accessor public MinecraftClient getClient();
+    @Accessor MinecraftClient getClient();
 }

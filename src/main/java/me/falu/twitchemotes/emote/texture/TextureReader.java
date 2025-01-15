@@ -29,9 +29,9 @@ public class TextureReader {
 
     public List<EmoteBackedTexture> read() throws IOException {
         return switch (this.imageType) {
-            default -> this.readStatic();
             case WEBP -> this.readWebP();
             case GIF -> this.readGIF();
+            default -> this.readStatic();
         };
     }
 
@@ -39,7 +39,7 @@ public class TextureReader {
         byte[] data = URLFetcher.getBytesFromURL(this.url.toString());
         WebPDecoder.WebPImage image = WebPDecoder.decode(data);
         if (image.frames.size() == 1) {
-            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(image.frames.get(0).img));
+            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(image.frames.getFirst().img));
             return List.of(new EmoteBackedTexture(img));
         }
         List<EmoteBackedTexture> textures = new ArrayList<>();

@@ -1,6 +1,5 @@
 package me.falu.twitchemotes;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -12,12 +11,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import webpdecoderjn.WebPDecoder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -38,7 +37,7 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     private static JsonElement getJsonResponse(String endpoint) throws IOException {
-        URL url = new URL(endpoint);
+        URL url = URI.create(endpoint).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         InputStream inputStream = connection.getInputStream();
@@ -49,7 +48,8 @@ public class TwitchEmotes implements ClientModInitializer {
     private static Map<String, Boolean> fetchPlayerEmotes(UUID playerUUID) {
         try {
             HashMap<String, Boolean> response = new HashMap<>();
-            getJsonResponse("http://localhost:8080/v1/emotes/" + playerUUID.toString()).getAsJsonArray().forEach(e -> {
+            LOGGER.info("Fetching player emotes for {}", playerUUID);
+            getJsonResponse("https://stream-emotes.e4b4.eu/v1/emotes/" + playerUUID.toString()).getAsJsonArray().forEach(e -> {
                 JsonObject el = e.getAsJsonObject();
                 String emoteName = el.get("name").getAsString();
 
@@ -63,7 +63,7 @@ public class TwitchEmotes implements ClientModInitializer {
             });
             return response;
         } catch (IOException e) {
-            TwitchEmotes.LOGGER.error("Failed getting emotes for " + playerUUID + ": " + e.toString());
+            TwitchEmotes.LOGGER.error("Failed getting emotes for {}: {}", playerUUID, e);
             return new HashMap<>();
         }
     }

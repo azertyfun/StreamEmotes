@@ -2,7 +2,6 @@ package me.falu.twitchemotes.mixin.render;
 
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
-import net.minecraft.client.font.BakedGlyph;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.Style;
 import net.minecraft.util.math.ColorHelper;
@@ -14,13 +13,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
-
 @Mixin(TextRenderer.Drawer.class)
 public class DrawerMixin {
     @Shadow float x;
     @Shadow float y;
-    @Shadow int color;
+    @Shadow @Final int color;
     @Shadow @Final private Matrix4f matrix;
 
     // Inject right before the glyph is added, then cancel the whole thing. All the rendering is done on our side for emotes (which have already been replaced by a "_" character).

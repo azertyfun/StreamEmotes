@@ -72,15 +72,6 @@ public class Emote {
         ImageType(String suffix) {
             this.suffix = suffix;
         }
-
-        public static ImageType fromSuffix(String suffix) {
-            for (ImageType type : ImageType.values()) {
-                if (type.suffix.equals(suffix)) {
-                    return type;
-                }
-            }
-            return STATIC;
-        }
     }
 
     @ToString

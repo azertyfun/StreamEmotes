@@ -4,34 +4,26 @@ import com.mojang.authlib.GameProfile;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
-import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.network.message.MessageTrustStatus;
-import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.time.Instant;
 import java.util.*;
-import java.util.function.BooleanSupplier;
 
 @Mixin(MessageHandler.class)
 public class MessageHandlerMixin {
     @Inject(method = "onChatMessage", at = @At(value = "HEAD"), cancellable = true)
     public void onChatMessage(SignedMessage message, GameProfile sender, MessageType.Parameters params, CallbackInfo ci) {
-        MessageHandlerInvoker mh = (MessageHandlerInvoker) (Object) (this);
+        MessageHandlerInvoker mh = (MessageHandlerInvoker) (this);
 
         Text text = params.applyChatDecoration(message.getContent());
 
